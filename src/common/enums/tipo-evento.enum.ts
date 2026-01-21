@@ -1,0 +1,6 @@
+export enum TipoEvento {
+  PENDIENTE = 'PENDIENTE',
+  EN_CURSO = 'EN_CURSO',
+  FINALIZADO = 'FINALIZADO',
+  MASIVO = 'MASIVO',
+}

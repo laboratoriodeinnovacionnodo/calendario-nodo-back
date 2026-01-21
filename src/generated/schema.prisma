@@ -1,0 +1,60 @@
+// prisma/schema.prisma
+
+generator client {
+  provider   = "prisma-client-js"
+  output     = "../src/generated"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  VEEDOR
+}
+
+enum TipoEvento {
+  PENDIENTE
+  EN_CURSO
+  FINALIZADO
+  MASIVO
+}
+
+model User {
+  id        String   @id @default(uuid())
+  nombre    String
+  email     String   @unique
+  password  String
+  rol       Role     @default(VEEDOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relación: eventos creados por este usuario
+  eventosCreados Event[]
+
+  @@map("users")
+}
+
+model Event {
+  id          String     @id @default(uuid())
+  titulo      String
+  descripcion String
+  informacion String     @db.Text
+  fechaDesde  DateTime
+  fechaHasta  DateTime
+  horaDesde   String // formato HH:mm
+  horaHasta   String // formato HH:mm
+  tipoEvento  TipoEvento @default(PENDIENTE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relación: usuario que creó el evento
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([fechaDesde, fechaHasta])
+  @@index([tipoEvento])
+  @@map("events")
+}
