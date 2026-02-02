@@ -1,0 +1,6 @@
+export enum Area {
+  COWORKING = 'COWORKING',
+  AUDITORIO = 'AUDITORIO',
+  LABORATORIO = 'LABORATORIO',
+  AULA = 'AULA',
+}

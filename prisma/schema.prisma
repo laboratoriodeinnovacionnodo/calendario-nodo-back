@@ -4,7 +4,6 @@ generator client {
   provider   = "prisma-client-js"
   output   = "../node_modules/.prisma/client" 
   engineType = "client"
-
 }
 
 datasource db {
@@ -20,7 +19,15 @@ enum TipoEvento {
   PENDIENTE
   EN_CURSO
   FINALIZADO
+  CANCELADO
   MASIVO
+}
+
+enum Area {
+  COWORKING
+  AUDITORIO
+  LABORATORIO
+  AULA
 }
 
 model User {
@@ -39,17 +46,27 @@ model User {
 }
 
 model Event {
-  id          String      @id @default(uuid())
-  titulo      String
-  descripcion String
-  informacion String      @db.Text
-  fechaDesde  DateTime
-  fechaHasta  DateTime
-  horaDesde   String      // formato HH:mm
-  horaHasta   String      // formato HH:mm
-  tipoEvento  TipoEvento  @default(PENDIENTE)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id                  String      @id @default(uuid())
+  titulo              String
+  descripcion         String?     // Ahora es opcional
+  informacion         String      @db.Text
+  fechaDesde          DateTime
+  fechaHasta          DateTime
+  horaDesde           String      // formato HH:mm
+  horaHasta           String      // formato HH:mm
+  tipoEvento          TipoEvento  @default(PENDIENTE)
+  area                Area
+  
+  // Nuevos campos
+  organizadorSolicitante String
+  coberturaPrensaBol     Boolean   @default(false)
+  anexos                 String[]  @default([]) // Array de links
+  contactoFormal         String
+  contactoInformal       String?
+  convocatoria           Int       @default(0)
+  
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
   
   // Relación: usuario que creó el evento
   createdById String
@@ -58,4 +75,5 @@ model Event {
   @@map("events")
   @@index([fechaDesde, fechaHasta])
   @@index([tipoEvento])
+  @@index([area])
 }

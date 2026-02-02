@@ -1,5 +1,6 @@
 import { IsDateString, IsEnum, IsOptional } from 'class-validator';
 import { TipoEvento } from '../../common/enums/tipo-evento.enum';
+import { Area } from '../../common/enums/area.enum';
 
 export class FilterEventDto {
   @IsDateString()
@@ -13,4 +14,8 @@ export class FilterEventDto {
   @IsEnum(TipoEvento)
   @IsOptional()
   tipoEvento?: TipoEvento;
+
+  @IsEnum(Area)
+  @IsOptional()
+  area?: Area;
 }

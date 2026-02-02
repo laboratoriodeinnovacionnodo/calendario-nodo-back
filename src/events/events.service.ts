@@ -14,6 +14,7 @@ export class EventsService {
         ...createEventDto,
         fechaDesde: new Date(createEventDto.fechaDesde),
         fechaHasta: new Date(createEventDto.fechaHasta),
+        anexos: createEventDto.anexos || [],
         createdById: userId,
       },
       include: {
@@ -45,6 +46,10 @@ export class EventsService {
 
     if (filterDto?.tipoEvento) {
       where.tipoEvento = filterDto.tipoEvento;
+    }
+
+    if (filterDto?.area) {
+      where.area = filterDto.area;
     }
 
     return this.prisma.event.findMany({
@@ -104,6 +109,10 @@ export class EventsService {
       dataToUpdate.fechaHasta = new Date(updateEventDto.fechaHasta);
     }
 
+    if (updateEventDto.anexos !== undefined) {
+      dataToUpdate.anexos = updateEventDto.anexos;
+    }
+
     return this.prisma.event.update({
       where: { id },
       data: dataToUpdate,
@@ -130,5 +139,42 @@ export class EventsService {
     return this.prisma.event.delete({
       where: { id },
     });
+  }
+
+  async getStatistics() {
+    const totalEvents = await this.prisma.event.count();
+    
+    const eventsByStatus = await this.prisma.event.groupBy({
+      by: ['tipoEvento'],
+      _count: true,
+    });
+
+    const eventsByArea = await this.prisma.event.groupBy({
+      by: ['area'],
+      _count: true,
+    });
+
+    const totalConvocatoria = await this.prisma.event.aggregate({
+      _sum: {
+        convocatoria: true,
+      },
+    });
+
+    const upcomingEvents = await this.prisma.event.count({
+      where: {
+        fechaDesde: {
+          gte: new Date(),
+        },
+        tipoEvento: 'PENDIENTE',
+      },
+    });
+
+    return {
+      totalEvents,
+      eventsByStatus,
+      eventsByArea,
+      totalConvocatoria: totalConvocatoria._sum.convocatoria || 0,
+      upcomingEvents,
+    };
   }
 }

@@ -1,5 +1,18 @@
-import { IsDateString, IsEnum, IsOptional, IsString, Matches } from 'class-validator';
+import { 
+  IsDateString, 
+  IsEnum, 
+  IsOptional, 
+  IsString, 
+  Matches, 
+  IsBoolean, 
+  IsArray, 
+  IsUrl, 
+  IsInt, 
+  Min 
+} from 'class-validator';
 import { TipoEvento } from '../../common/enums/tipo-evento.enum';
+import { Area } from '../../common/enums/area.enum';
+import { Type } from 'class-transformer';
 
 export class UpdateEventDto {
   @IsString()
@@ -39,4 +52,35 @@ export class UpdateEventDto {
   @IsEnum(TipoEvento)
   @IsOptional()
   tipoEvento?: TipoEvento;
+
+  @IsEnum(Area)
+  @IsOptional()
+  area?: Area;
+
+  @IsString()
+  @IsOptional()
+  organizadorSolicitante?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  coberturaPrensaBol?: boolean;
+
+  @IsArray()
+  @IsUrl({}, { each: true })
+  @IsOptional()
+  anexos?: string[];
+
+  @IsString()
+  @IsOptional()
+  contactoFormal?: string;
+
+  @IsString()
+  @IsOptional()
+  contactoInformal?: string;
+
+  @IsInt()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  convocatoria?: number;
 }
