@@ -12,7 +12,6 @@ datasource db {
 
 enum Role {
   ADMIN
-  VEEDOR
 }
 
 enum TipoEvento {
@@ -21,13 +20,24 @@ enum TipoEvento {
   FINALIZADO
   CANCELADO
   MASIVO
+  ESCOLAR
 }
 
 enum Area {
   COWORKING
   AUDITORIO
   LABORATORIO
-  AULA
+  AULA_1
+  AULA_2
+  AULA_3
+  AULA_4
+  AULA_5
+  AULA_6
+  RECEPCION_ESTE
+  RECEPCION_OESTE
+  EXPLANADA
+  PLAZA
+  SALA_REUNIONES
 }
 
 model User {
@@ -35,7 +45,7 @@ model User {
   nombre    String
   email     String   @unique
   password  String
-  rol       Role     @default(VEEDOR)
+  rol       Role     @default(ADMIN)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   

@@ -1,12 +1,18 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, Logger } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { FilterEventDto } from './dto/filter-event.dto';
 import { PrismaService } from '../../prisma/prisma.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class EventsService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(EventsService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) {}
 
   async create(createEventDto: CreateEventDto, userId: string) {
     const event = await this.prisma.event.create({
@@ -28,6 +34,15 @@ export class EventsService {
         },
       },
     });
+
+    // 🔥 ENVÍO AUTOMÁTICO DE EMAIL AL CREAR EVENTO
+    try {
+      await this.mailService.sendEventCreatedEmail(event, event.createdBy);
+      this.logger.log(`✉️ Email de confirmación enviado a ${event.createdBy.email}`);
+    } catch (error) {
+      this.logger.error(`❌ Error enviando email de confirmación: ${error.message}`);
+      // No fallar la creación del evento si falla el email
+    }
 
     return event;
   }
