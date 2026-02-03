@@ -21,13 +21,13 @@ export class EventsController {
   }
 
   @Get()
-  @Roles(Role.ADMIN, Role.VEEDOR)
+  @Roles(Role.ADMIN)
   findAll(@Query() filterDto: FilterEventDto) {
     return this.eventsService.findAll(filterDto);
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN, Role.VEEDOR)
+  @Roles(Role.ADMIN)
   findOne(@Param('id') id: string) {
     return this.eventsService.findOne(id);
   }

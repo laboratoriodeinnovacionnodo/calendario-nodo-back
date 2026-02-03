@@ -156,7 +156,6 @@ exports.Prisma.QueryMode = {
 };
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
-  VEEDOR: 'VEEDOR'
 };
 
 exports.TipoEvento = exports.$Enums.TipoEvento = {

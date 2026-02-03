@@ -30,7 +30,6 @@ export type Event = $Result.DefaultSelection<Prisma.$EventPayload>
 export namespace $Enums {
   export const Role: {
   ADMIN: 'ADMIN',
-  VEEDOR: 'VEEDOR'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]
