@@ -4,6 +4,7 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { FilterEventDto } from './dto/filter-event.dto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { MailService } from '../mail/mail.service';
+import { TipoEvento } from '@prisma/client';
 
 @Injectable()
 export class EventsService {
@@ -17,10 +18,21 @@ export class EventsService {
   async create(createEventDto: CreateEventDto, userId: string) {
     const event = await this.prisma.event.create({
       data: {
-        ...createEventDto,
+        titulo: createEventDto.titulo,
+        descripcion: createEventDto.descripcion,
+        informacion: createEventDto.informacion,
         fechaDesde: new Date(createEventDto.fechaDesde),
         fechaHasta: new Date(createEventDto.fechaHasta),
+        horaDesde: createEventDto.horaDesde,
+        horaHasta: createEventDto.horaHasta,
+        tipoEvento: createEventDto.tipoEvento as any,
+        area: createEventDto.area as any,
+        organizadorSolicitante: createEventDto.organizadorSolicitante,
+        coberturaPrensaBol: createEventDto.coberturaPrensaBol,
         anexos: createEventDto.anexos || [],
+        contactoFormal: createEventDto.contactoFormal,
+        contactoInformal: createEventDto.contactoInformal,
+        convocatoria: createEventDto.convocatoria,
         createdById: userId,
       },
       include: {
@@ -114,7 +126,21 @@ export class EventsService {
       throw new ForbiddenException('No puedes editar este evento');
     }
 
-    const dataToUpdate: any = { ...updateEventDto };
+    const dataToUpdate: any = {};
+
+    // Solo agregar campos que vienen en el DTO
+    if (updateEventDto.titulo !== undefined) dataToUpdate.titulo = updateEventDto.titulo;
+    if (updateEventDto.descripcion !== undefined) dataToUpdate.descripcion = updateEventDto.descripcion;
+    if (updateEventDto.informacion !== undefined) dataToUpdate.informacion = updateEventDto.informacion;
+    if (updateEventDto.horaDesde !== undefined) dataToUpdate.horaDesde = updateEventDto.horaDesde;
+    if (updateEventDto.horaHasta !== undefined) dataToUpdate.horaHasta = updateEventDto.horaHasta;
+    if (updateEventDto.tipoEvento !== undefined) dataToUpdate.tipoEvento = updateEventDto.tipoEvento;
+    if (updateEventDto.area !== undefined) dataToUpdate.area = updateEventDto.area;
+    if (updateEventDto.organizadorSolicitante !== undefined) dataToUpdate.organizadorSolicitante = updateEventDto.organizadorSolicitante;
+    if (updateEventDto.coberturaPrensaBol !== undefined) dataToUpdate.coberturaPrensaBol = updateEventDto.coberturaPrensaBol;
+    if (updateEventDto.contactoFormal !== undefined) dataToUpdate.contactoFormal = updateEventDto.contactoFormal;
+    if (updateEventDto.contactoInformal !== undefined) dataToUpdate.contactoInformal = updateEventDto.contactoInformal;
+    if (updateEventDto.convocatoria !== undefined) dataToUpdate.convocatoria = updateEventDto.convocatoria;
 
     if (updateEventDto.fechaDesde) {
       dataToUpdate.fechaDesde = new Date(updateEventDto.fechaDesde);
@@ -180,7 +206,7 @@ export class EventsService {
         fechaDesde: {
           gte: new Date(),
         },
-        tipoEvento: 'PENDIENTE',
+        tipoEvento: TipoEvento.PENDIENTE,
       },
     });
 

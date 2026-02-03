@@ -11,8 +11,7 @@ import {
   IsInt, 
   Min 
 } from 'class-validator';
-import { TipoEvento } from '../../common/enums/tipo-evento.enum';
-import { Area } from '../../common/enums/area.enum';
+import { TipoEvento, Area } from '@prisma/client';
 import { Type } from 'class-transformer';
 
 export class CreateEventDto {

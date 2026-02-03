@@ -1,6 +1,17 @@
+// Este archivo debe estar sincronizado con prisma/schema.prisma
 export enum Area {
   COWORKING = 'COWORKING',
   AUDITORIO = 'AUDITORIO',
   LABORATORIO = 'LABORATORIO',
-  AULA = 'AULA',
+  AULA_1 = 'AULA_1',
+  AULA_2 = 'AULA_2',
+  AULA_3 = 'AULA_3',
+  AULA_4 = 'AULA_4',
+  AULA_5 = 'AULA_5',
+  AULA_6 = 'AULA_6',
+  RECEPCION_ESTE = 'RECEPCION_ESTE',
+  RECEPCION_OESTE = 'RECEPCION_OESTE',
+  EXPLANADA = 'EXPLANADA',
+  PLAZA = 'PLAZA',
+  SALA_REUNIONES = 'SALA_REUNIONES',
 }
