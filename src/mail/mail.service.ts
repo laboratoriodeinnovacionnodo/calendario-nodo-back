@@ -35,13 +35,8 @@ export class MailService {
       host,
       port,
       secure: port === 465,
-      auth: {
-        user,
-        pass,
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
+      auth: { user, pass },
+      tls: { rejectUnauthorized: false },
     });
 
     this.verifyConnection();
@@ -64,7 +59,7 @@ export class MailService {
 
     try {
       const html = await this.loadTemplate(options.template, options.context);
-      
+
       const mailOptions = {
         from: options.from || this.configService.get<string>('MAIL_FROM'),
         to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
@@ -76,7 +71,6 @@ export class MailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      
       this.logger.log(`✉️ Email enviado: ${info.messageId}`);
       return true;
     } catch (error) {
@@ -90,10 +84,7 @@ export class MailService {
       const job = await this.mailQueue.add('send-email', options, {
         priority,
         attempts: 3,
-        backoff: {
-          type: 'exponential',
-          delay: 2000,
-        },
+        backoff: { type: 'exponential', delay: 2000 },
         removeOnComplete: true,
         removeOnFail: false,
       });
@@ -107,11 +98,10 @@ export class MailService {
 
   private async loadTemplate(templateName: string, context: Record<string, any>): Promise<string> {
     const templatePath = path.join(__dirname, 'templates', `${templateName}.html`);
-    
+
     try {
       let template = await fs.readFile(templatePath, 'utf-8');
-      
-      // Reemplazar variables {{variable}}
+
       Object.keys(context).forEach((key) => {
         const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
         template = template.replace(regex, context[key]);
@@ -124,8 +114,7 @@ export class MailService {
     }
   }
 
-  // Métodos de utilidad para casos específicos
-
+  // ✅ ACTUALIZADO: areas es array, se muestra como lista separada por comas
   async sendEventCreatedEmail(event: any, creator: any): Promise<void> {
     await this.queueEmail({
       to: creator.email,
@@ -136,7 +125,7 @@ export class MailService {
         eventTitle: event.titulo,
         eventDate: new Date(event.fechaDesde).toLocaleDateString('es-AR'),
         eventTime: event.horaDesde,
-        eventArea: event.area,
+        eventArea: Array.isArray(event.areas) ? event.areas.join(', ') : event.areas,
       },
     });
   }
@@ -151,22 +140,19 @@ export class MailService {
           eventTitle: event.titulo,
           eventDate: new Date(event.fechaDesde).toLocaleDateString('es-AR'),
           eventTime: event.horaDesde,
-          eventLocation: event.area,
+          eventLocation: Array.isArray(event.areas) ? event.areas.join(', ') : event.areas,
           eventDescription: event.descripcion,
         },
       },
-      1, // Mayor prioridad
+      1,
     );
   }
 
   async sendBulkEmails(recipients: string[], options: Omit<MailOptions, 'to'>): Promise<void> {
-    const chunks = this.chunkArray(recipients, 50); // 50 emails por lote
+    const chunks = this.chunkArray(recipients, 50);
 
     for (const chunk of chunks) {
-      await this.queueEmail({
-        ...options,
-        to: chunk,
-      });
+      await this.queueEmail({ ...options, to: chunk });
     }
 
     this.logger.log(`📧 ${recipients.length} emails encolados en ${chunks.length} lotes`);

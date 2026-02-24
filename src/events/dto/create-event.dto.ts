@@ -9,7 +9,9 @@ import {
   IsArray, 
   IsUrl, 
   IsInt, 
-  Min 
+  Min,
+  ArrayMinSize,
+  ArrayUnique,
 } from 'class-validator';
 import { TipoEvento, Area } from '@prisma/client';
 import { Type } from 'class-transformer';
@@ -48,9 +50,12 @@ export class CreateEventDto {
   @IsEnum(TipoEvento)
   tipoEvento: TipoEvento;
 
-  @IsEnum(Area)
+  @IsArray()
+  @ArrayMinSize(1, { message: 'Debe seleccionar al menos un área' })
+  @ArrayUnique({ message: 'No puede haber áreas duplicadas' })
+  @IsEnum(Area, { each: true, message: 'Cada área debe ser un valor válido' })
   @IsNotEmpty()
-  area: Area;
+  areas: Area[];
 
   @IsString()
   @IsNotEmpty()

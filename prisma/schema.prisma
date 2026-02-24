@@ -2,7 +2,7 @@
 
 generator client {
   provider   = "prisma-client-js"
-  output   = "../node_modules/.prisma/client" 
+  output     = "../node_modules/.prisma/client"
   engineType = "client"
 }
 
@@ -10,8 +10,11 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
 enum Role {
   ADMIN
+  // VEEDOR eliminado: ahora solo existe ADMIN
 }
 
 enum TipoEvento {
@@ -40,6 +43,8 @@ enum Area {
   SALA_REUNIONES
 }
 
+// ─── Modelos ──────────────────────────────────────────────────────────────────
+
 model User {
   id        String   @id @default(uuid())
   nombre    String
@@ -48,42 +53,37 @@ model User {
   rol       Role     @default(ADMIN)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  // Relación: eventos creados por este usuario
+
   eventosCreados Event[]
 
   @@map("users")
 }
 
 model Event {
-  id                  String      @id @default(uuid())
-  titulo              String
-  descripcion         String?     // Ahora es opcional
-  informacion         String      @db.Text
-  fechaDesde          DateTime
-  fechaHasta          DateTime
-  horaDesde           String      // formato HH:mm
-  horaHasta           String      // formato HH:mm
-  tipoEvento          TipoEvento  @default(PENDIENTE)
-  area                Area
-  
-  // Nuevos campos
+  id          String     @id @default(uuid())
+  titulo      String
+  descripcion String?
+  informacion String     @db.Text
+  fechaDesde  DateTime
+  fechaHasta  DateTime
+  horaDesde   String
+  horaHasta   String
+  tipoEvento  TipoEvento @default(PENDIENTE)
+  areas       Area[]     @default([])
+
   organizadorSolicitante String
-  coberturaPrensaBol     Boolean   @default(false)
-  anexos                 String[]  @default([]) // Array de links
+  coberturaPrensaBol     Boolean  @default(false)
+  anexos                 String[] @default([])
   contactoFormal         String
   contactoInformal       String?
-  convocatoria           Int       @default(0)
-  
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
-  
-  // Relación: usuario que creó el evento
-  createdById String
-  createdBy   User        @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  convocatoria           Int      @default(0)
 
-  @@map("events")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
   @@index([fechaDesde, fechaHasta])
   @@index([tipoEvento])
-  @@index([area])
+  @@map("events")
 }

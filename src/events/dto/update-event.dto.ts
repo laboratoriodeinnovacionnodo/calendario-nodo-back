@@ -8,7 +8,9 @@ import {
   IsArray, 
   IsUrl, 
   IsInt, 
-  Min 
+  Min,
+  ArrayMinSize,
+  ArrayUnique,
 } from 'class-validator';
 import { TipoEvento } from '../../common/enums/tipo-evento.enum';
 import { Area } from '../../common/enums/area.enum';
@@ -53,9 +55,12 @@ export class UpdateEventDto {
   @IsOptional()
   tipoEvento?: TipoEvento;
 
-  @IsEnum(Area)
+  @IsArray()
+  @ArrayMinSize(1, { message: 'Debe seleccionar al menos un área' })
+  @ArrayUnique({ message: 'No puede haber áreas duplicadas' })
+  @IsEnum(Area, { each: true, message: 'Cada área debe ser un valor válido' })
   @IsOptional()
-  area?: Area;
+  areas?: Area[];
 
   @IsString()
   @IsOptional()
